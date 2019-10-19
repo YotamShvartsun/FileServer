@@ -11,7 +11,7 @@ import multer from 'multer';
 import {exists, unlink} from 'fs';
 import {join, resolve} from 'path';
 import { randomBytes } from 'crypto';
-
+let sqlite = require('sqlite3');
 
 let storage = multer.diskStorage({
     destination: (req, file, cb)=>{
@@ -26,6 +26,7 @@ let storage = multer.diskStorage({
 
 const filenameRegEx = /[^\\/]+\.[^\\/]+$/;
 const __dirname = resolve();
+let db = new sqlite.Database(join(__dirname, 'db.sqlite'));
 const app = express();
 app.use(express.static('static'));
 app.set('views', join(__dirname, 'views'));
@@ -63,6 +64,22 @@ app.post('/fileupload', upload.single('file'), (req, res)=>{
     res.render('upload', {url: `/getfile/${req.file.filename}`});
 });
 
-app.listen(8080, ()=>{
+let server = app.listen(8080, ()=>{
+    db.run("create table if not exists files(filename text primery key, maxViews integer);")
     console.log('on 8080!');
-})
+});
+let shutdown = () =>{
+    console.log()
+    console.group('Shutdown:');
+    console.info('[INFO] begun shutdown');
+    server.close(()=>{
+        console.info('[INFO] http server closed');
+        db.close();
+        console.info('[INFO] db connection closed');
+        console.info('[INFO] procces terminated');
+        console.groupEnd();
+        process.exit(0);
+    });
+};
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
