@@ -1,16 +1,20 @@
 {
   "name": "file-upload",
   "version": "1.0.0",
-  "description": "",
+  "description": "A file server",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YotamShvartsun/FileServer.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src -d build",
     "start": "node ./build/index.js"
   },
-  "type": "module",
-  "author": "",
+  "author": "Yotam shvartsun",
   "license": "ISC",
   "dependencies": {
+    "@types/sqlite3": "^3.1.5",
     "body-parser": "^1.19.0",
     "ejs": "^2.7.1",
     "express": "^4.17.1",
